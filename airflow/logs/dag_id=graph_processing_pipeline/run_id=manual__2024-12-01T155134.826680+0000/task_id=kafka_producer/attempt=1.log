@@ -1,0 +1,17 @@
+[2024-12-01T15:51:42.135+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2024-12-01T15:51:42.167+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: graph_processing_pipeline.kafka_producer manual__2024-12-01T15:51:34.826680+00:00 [queued]>
+[2024-12-01T15:51:42.194+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: graph_processing_pipeline.kafka_producer manual__2024-12-01T15:51:34.826680+00:00 [queued]>
+[2024-12-01T15:51:42.195+0000] {taskinstance.py:2866} INFO - Starting attempt 1 of 1
+[2024-12-01T15:51:42.260+0000] {taskinstance.py:2889} INFO - Executing <Task(PythonOperator): kafka_producer> on 2024-12-01 15:51:34.826680+00:00
+[2024-12-01T15:51:42.269+0000] {standard_task_runner.py:72} INFO - Started process 141 to run task
+[2024-12-01T15:51:42.286+0000] {standard_task_runner.py:104} INFO - Running: ['airflow', 'tasks', 'run', 'graph_processing_pipeline', 'kafka_producer', 'manual__2024-12-01T15:51:34.826680+00:00', '--job-id', '3', '--raw', '--subdir', 'DAGS_FOLDER/graph_processing_pipeline.py', '--cfg-path', '/tmp/tmpe6vwng8d']
+[2024-12-01T15:51:42.297+0000] {standard_task_runner.py:105} INFO - Job 3: Subtask kafka_producer
+[2024-12-01T15:51:42.518+0000] {task_command.py:467} INFO - Running <TaskInstance: graph_processing_pipeline.kafka_producer manual__2024-12-01T15:51:34.826680+00:00 [running]> on host 9e0fc9dced4f
+[2024-12-01T15:51:42.805+0000] {taskinstance.py:3132} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='graph_processing_pipeline' AIRFLOW_CTX_TASK_ID='kafka_producer' AIRFLOW_CTX_EXECUTION_DATE='2024-12-01T15:51:34.826680+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-12-01T15:51:34.826680+00:00'
+[2024-12-01T15:51:42.811+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2024-12-01T15:51:43.032+0000] {python.py:240} INFO - Done. Returned value was: None
+[2024-12-01T15:51:43.051+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2024-12-01T15:51:43.052+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=graph_processing_pipeline, task_id=kafka_producer, run_id=manual__2024-12-01T15:51:34.826680+00:00, execution_date=20241201T155134, start_date=20241201T155142, end_date=20241201T155143
+[2024-12-01T15:51:43.149+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2024-12-01T15:51:43.207+0000] {taskinstance.py:3895} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2024-12-01T15:51:43.221+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

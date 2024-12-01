@@ -1,0 +1,17 @@
+[2024-12-01T17:22:54.728+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2024-12-01T17:22:54.756+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: graph_processing_pipeline.insert_neo4j manual__2024-12-01T17:22:39+00:00 [queued]>
+[2024-12-01T17:22:54.780+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: graph_processing_pipeline.insert_neo4j manual__2024-12-01T17:22:39+00:00 [queued]>
+[2024-12-01T17:22:54.782+0000] {taskinstance.py:2866} INFO - Starting attempt 1 of 1
+[2024-12-01T17:22:54.830+0000] {taskinstance.py:2889} INFO - Executing <Task(PythonOperator): insert_neo4j> on 2024-12-01 17:22:39+00:00
+[2024-12-01T17:22:54.837+0000] {standard_task_runner.py:72} INFO - Started process 408 to run task
+[2024-12-01T17:22:54.840+0000] {standard_task_runner.py:104} INFO - Running: ['airflow', 'tasks', 'run', 'graph_processing_pipeline', 'insert_neo4j', 'manual__2024-12-01T17:22:39+00:00', '--job-id', '25', '--raw', '--subdir', 'DAGS_FOLDER/graph_processing_pipeline.py', '--cfg-path', '/tmp/tmp4a407btf']
+[2024-12-01T17:22:54.842+0000] {standard_task_runner.py:105} INFO - Job 25: Subtask insert_neo4j
+[2024-12-01T17:22:54.964+0000] {task_command.py:467} INFO - Running <TaskInstance: graph_processing_pipeline.insert_neo4j manual__2024-12-01T17:22:39+00:00 [running]> on host 5700fae7b19a
+[2024-12-01T17:22:55.115+0000] {taskinstance.py:3132} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='graph_processing_pipeline' AIRFLOW_CTX_TASK_ID='insert_neo4j' AIRFLOW_CTX_EXECUTION_DATE='2024-12-01T17:22:39+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-12-01T17:22:39+00:00'
+[2024-12-01T17:22:55.117+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2024-12-01T17:22:55.174+0000] {python.py:240} INFO - Done. Returned value was: None
+[2024-12-01T17:22:55.191+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2024-12-01T17:22:55.192+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=graph_processing_pipeline, task_id=insert_neo4j, run_id=manual__2024-12-01T17:22:39+00:00, execution_date=20241201T172239, start_date=20241201T172254, end_date=20241201T172255
+[2024-12-01T17:22:55.272+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2024-12-01T17:22:55.312+0000] {taskinstance.py:3895} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2024-12-01T17:22:55.327+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

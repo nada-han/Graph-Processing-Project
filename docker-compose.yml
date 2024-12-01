@@ -1,0 +1,266 @@
+version: "3.8"
+services:
+  # Spark Master
+  spark-master:
+    image: bitnami/spark:latest
+    container_name: spark-master
+    environment:
+      - SPARK_MODE=master
+    ports:
+      - "4040:4040"  # Spark UI
+      - "7077:7077"  # Spark Master
+    networks:
+      - graph-network
+    volumes:
+      - ./data:/app/data
+
+  # Spark Worker
+  spark-worker:
+    image: bitnami/spark:latest
+    container_name: spark-worker1
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    depends_on:
+      - spark-master
+    ports:
+      - "8081:8081"  # Spark Worker UI
+    networks:
+      - graph-network
+    volumes:
+      - ./data:/app/data
+
+  # Hadoop NameNode
+  hadoop-namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop2.7.4-java8
+    container_name: hadoop-namenode
+    environment:
+      - CLUSTER_NAME=hadoop-cluster
+    ports:
+      - "8099:50070"  # HDFS NameNode Web UI
+    volumes:
+      - hadoop-namenode-data:/hadoop/dfs/name
+    networks:
+      - graph-network
+
+  # Hadoop DataNode
+  hadoop-datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop2.7.4-java8
+    container_name: hadoop-datanode
+    environment:
+      - CLUSTER_NAME=hadoop-cluster
+      - NAMENODE_URI=hdfs://hadoop-namenode:8020
+    ports:
+      - "9864:50075"  # DataNode Web UI
+    volumes:
+      - hadoop-datanode-data:/hadoop/dfs/data
+    depends_on:
+      - hadoop-namenode
+    networks:
+      - graph-network
+
+  # Neo4j
+  neo4j:
+    image: neo4j:5
+    container_name: neo4j
+    environment:
+      - NEO4J_AUTH=none
+    ports:
+      - "7474:7474"  # Neo4j Browser
+      - "7687:7687"  # Bolt Protocol
+    volumes:
+      - neo4j_data:/data
+      - ./datasets:/datasets
+    networks:
+      - graph-network
+      - stream-net
+
+  # Streamlit
+  streamlit:
+    image: samdobson/streamlit
+    build:
+      context: ./streamlit_app
+    container_name: streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./streamlit_app:/app
+    networks:
+      - graph-network
+      - stream-net
+
+  # Kafka Zookeeper
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - kafka-net
+
+  # Kafka Broker
+  broker:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: broker
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL: PLAINTEXT
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8083
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker:9092
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: 'false'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+    networks:
+      - kafka-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", 'nc -z broker 9092']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # The Apache airflow webserver
+  airflow-git:
+    image : airflow-git:latest
+    container_name: airflow
+    build:
+      context: ./airflow
+    volumes :
+      - ./airflow:/opt/airflow
+    ports :
+      - "8084:8080"
+    command : airflow standalone
+    networks:
+      - kafka-net
+      - graph-network
+  
+  # Schema Registry
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.4.0
+    hostname: schema-registry
+    container_name: schema-registry
+    depends_on:
+      broker:
+        condition: service_healthy
+    ports:
+      - "8083:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:9092'
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8083
+    networks:
+      - kafka-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Control center
+  control-center:
+    image: confluentinc/cp-enterprise-control-center:7.4.0
+    hostname: control-center
+    container_name: control-center
+    depends_on:
+      broker:
+        condition: service_healthy
+      schema-registry:
+        condition: service_healthy
+    ports:
+      - "9021:9021"
+    environment:
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: 'broker:9092'
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8083"
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
+      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
+      CONFLUENT_METRICS_TOPIC_REPLICATION: 1
+      CONFLUENT_METRICS_ENABLE: 'false'
+      PORT: 9021
+    networks:
+      - kafka-net
+      - graph-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9021/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
+  # Initializing the postgres service
+  postgres:
+    image: postgres:14.0
+    container_name: postgres
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    ports:
+      - "5432:5432"
+    networks:
+      - kafka-net
+      - graph-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  # Zeppelin
+  zeppelin:
+    image: apache/zeppelin:0.10.0
+    container_name: zeppelin1
+    depends_on:
+      - spark-master
+    ports:
+      - "8082:8080"
+    environment:
+      - ZEPPELIN_ADDR=0.0.0.0
+      - ZEPPELIN_SPARK_MASTER=spark://spark-master:7077
+      - ZEPPELIN_NOTEBOOK_DIR=/zeppelin/notebook
+    volumes:
+      - zeppelin_data:/zeppelin/data
+      - ./zeppelin/notebook:/zeppelin/notebook
+    networks:
+      - graph-network
+
+  # Flask App
+  flask-app:
+    build: .
+    container_name: flask-app
+    ports:
+      - "5000:5000"
+    depends_on:
+      - broker
+    environment:
+      - KAFKA_BROKER=broker:9092
+    networks:
+      - kafka-net
+      - graph-network
+    volumes:
+      - ./app:/app
+
+
+volumes:
+  neo4j_data:
+  zeppelin_data:
+  hadoop-namenode-data:
+  hadoop-datanode-data:
+
+networks:
+  graph-network:
+    driver: bridge
+  kafka-net:
+    external: true
+  stream-net:
+    external: true
