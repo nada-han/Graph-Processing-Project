@@ -1,0 +1,17 @@
+[2024-12-08T17:33:01.145+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2024-12-08T17:33:01.175+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: graph_processing_pipeline.start_streamlit manual__2024-12-08T17:32:45.399358+00:00 [queued]>
+[2024-12-08T17:33:01.195+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: graph_processing_pipeline.start_streamlit manual__2024-12-08T17:32:45.399358+00:00 [queued]>
+[2024-12-08T17:33:01.197+0000] {taskinstance.py:2866} INFO - Starting attempt 1 of 1
+[2024-12-08T17:33:01.248+0000] {taskinstance.py:2889} INFO - Executing <Task(PythonOperator): start_streamlit> on 2024-12-08 17:32:45.399358+00:00
+[2024-12-08T17:33:01.254+0000] {standard_task_runner.py:72} INFO - Started process 188 to run task
+[2024-12-08T17:33:01.258+0000] {standard_task_runner.py:104} INFO - Running: ['airflow', 'tasks', 'run', 'graph_processing_pipeline', 'start_streamlit', 'manual__2024-12-08T17:32:45.399358+00:00', '--job-id', '20', '--raw', '--subdir', 'DAGS_FOLDER/graph_processing_pipeline.py', '--cfg-path', '/tmp/tmpyzeni0jg']
+[2024-12-08T17:33:01.260+0000] {standard_task_runner.py:105} INFO - Job 20: Subtask start_streamlit
+[2024-12-08T17:33:01.367+0000] {task_command.py:467} INFO - Running <TaskInstance: graph_processing_pipeline.start_streamlit manual__2024-12-08T17:32:45.399358+00:00 [running]> on host 13d96d1ee281
+[2024-12-08T17:33:01.515+0000] {taskinstance.py:3132} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='graph_processing_pipeline' AIRFLOW_CTX_TASK_ID='start_streamlit' AIRFLOW_CTX_EXECUTION_DATE='2024-12-08T17:32:45.399358+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-12-08T17:32:45.399358+00:00'
+[2024-12-08T17:33:01.516+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2024-12-08T17:33:01.576+0000] {python.py:240} INFO - Done. Returned value was: None
+[2024-12-08T17:33:01.595+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2024-12-08T17:33:01.597+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=graph_processing_pipeline, task_id=start_streamlit, run_id=manual__2024-12-08T17:32:45.399358+00:00, execution_date=20241208T173245, start_date=20241208T173301, end_date=20241208T173301
+[2024-12-08T17:33:01.652+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2024-12-08T17:33:01.682+0000] {taskinstance.py:3895} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2024-12-08T17:33:01.686+0000] {local_task_job_runner.py:245} INFO - ::endgroup::
