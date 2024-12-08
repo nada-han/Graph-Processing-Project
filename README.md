@@ -44,16 +44,21 @@ Ce projet implémente un pipeline de data engineering pour traiter un dataset de
      ```bash
      git clone https://github.com/nada-han/Graph-Processing-Project.git
      cd Graph-Processing-Project
+     docker network create stream-net
+     docker network create kafka-net
+     docker network create graph-network
      ```
 
 2. **Démarrer les services avec Docker Compose** :
    - Lance tous les conteneurs en arrière-plan :
      ```bash
-     docker-compose up -d
+     docker-compose up --build
      ```
 3. **Accéder à l'application Streamlit** :
    - Ouvre un navigateur et accède à l'application Streamlit via l'URL suivante :
      ```
      http://localhost:8501
      ```
-https://github.com/user-attachments/assets/543ce862-f615-4b0e-9639-83fb1b72d7a6
+## **Vidéo démonstrative du projet**
+
+https://github.com/user-attachments/assets/34dbe094-f50b-4322-91a6-0c894ae6ee2a
