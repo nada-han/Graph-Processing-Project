@@ -48,9 +48,12 @@ def visualize_graph(df, algorithm_name=None):
     # Generate layout and labels
     pos = nx.spring_layout(G)
     labels = {
-        node: f"{node}\nPR: {data.get('pagerank', 'N/A'):.2f}" if data.get('pagerank') is not None else f"{node}\nPR: N/A"
-        for node, data in G.nodes(data=True)
+    node: f"{node}\nPR: {float(data.get('pagerank')):.2f}" 
+    if data.get('pagerank') is not None and isinstance(data.get('pagerank'), (int, float)) 
+    else f"{node}\nPR: N/A"
+    for node, data in G.nodes(data=True)
     }
+
 
     # Visualize graph
     plt.figure(figsize=(12, 8))
@@ -86,11 +89,11 @@ def query_graph_data(graph_name, algorithm):
     
     # Filter the dataframe based on the selected algorithm
     if algorithm == "PageRank":
-        result_df = result_df[['source', 'pagerank']]
+        result_df = result_df[['source', 'pagerank']].dropna(subset=['pagerank'])
     elif algorithm == "Connected Components":
-        result_df = result_df[['source', 'component']]
+        result_df = result_df[['source', 'component']].dropna(subset=['component'])
     elif algorithm == "Triangle Count":
-        result_df = result_df[['source', 'triangle_count']]
+        result_df = result_df[['source', 'triangle_count']].dropna(subset=['triangle_count'])
 
     return result_df
 
